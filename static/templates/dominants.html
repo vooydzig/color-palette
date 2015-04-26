@@ -1,0 +1,18 @@
+% include('header.html', title='Find dominant colors!')
+  <a href="/">back</a>
+  <p>
+    Color count: <input type="text" name="color_count" value="{{count}}" size="3"/>
+    <div id="color_count_slider"></div>
+  </p>
+  <p>
+    Tolerance: <input type="text" name="tolerance" value="{{tolerance}}" size="3"/>
+    <div id="tolerance_slider"></div>
+  </p>
+  <h1> The <span class="count">{{count}}</span> most dominant colors</h1>
+  <div class="colors">
+  % for color in colors:
+    <div class="color" style="background-color: {{color[0]}}" title="{{color[0]}}">&nbsp;</div>
+  % end
+  </div>
+  <img src="/static/img/{{ filename }}" />
+% include('footer.html')

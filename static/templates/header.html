@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+  <meta charset="UTF-8">
+  <title>{{title}}</title>
+  <link rel="stylesheet" type="text/css" href="/static/css/style.css" />
+  <link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.11.4/jquery-ui.min.js"></script>
+  <script>
+    function handleAjax() {
+      $.ajax('/update', {
+        dataType: 'json',
+        method: 'POST',
+        data: {
+          color_count: $('input[name="color_count"]').val(),
+          tolerance: $('input[name="tolerance"]').val(),
+          img_src: $('img').attr('src')
+        }
+      })
+        .done(function(data) {
+          if (data.status == "ok") {
+            $('.count').text(data.count.toString());
+
+            var $colors = $(".colors").empty();
+            for (var i=0; i< data.colors.length; i++) {
+              var color = data.colors[i][0];
+              $('<div class="color" style="background-color: ' + color + '" title="' + color + '">&nbsp;</div>')
+                  .appendTo($colors);
+            }
+          }
+        })
+        .fail(function(data) {
+          console.log("ERROR!")
+        })
+    }
+
+    function setupSliderWidgets($input, $slider, min, max) {
+      $slider.slider({
+        min: min,
+        max: max,
+        value: $input.val(),
+        slide: function( event, ui ) {
+          $input.val( ui.value );
+        },
+        stop: function() {
+          handleAjax();
+        }
+      });
+
+
+      $input.val( $slider.slider( "value" )).blur(function () {
+        var val = $(this).val();
+        if (val < min)
+          val = min;
+        if (val > max)
+          val = max;
+        $slider.slider('value', val);
+        $(this).val(val);
+        handleAjax();
+      });
+    }
+
+    $(function(){
+      setupSliderWidgets($('input[name="color_count"]'), $("#color_count_slider"), 1, 255);
+      setupSliderWidgets($('input[name="tolerance"]'), $("#tolerance_slider"), 1, 256);
+      $( document ).tooltip();
+    });
+  </script>
+
+</head>
+<body>
+  <div class="container">
